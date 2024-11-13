@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BisaixiangmuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.bisaixiangmu_name as bisaixiangmuName
+        ,a.bisaixiangmu_photo as bisaixiangmuPhoto
+        ,a.bisaixiangmu_shijian as bisaixiangmuShijian
+        ,a.bisaixiangmu_fuzhenr as bisaixiangmuFuzhenr
+        ,a.bisaixiangmu_phone as bisaixiangmuPhone
+        ,a.bisaixiangmu_types as bisaixiangmuTypes
+        ,a.jieshu_time as jieshuTime
+        ,a.bisaixiangmu_content as bisaixiangmuContent
+        ,a.bisaixiangmu_delete as bisaixiangmuDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BisaixiangmuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM bisaixiangmu  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.bisaixiangmuName != '' and params.bisaixiangmuName != null and params.bisaixiangmuName != 'null' ">
+                and a.bisaixiangmu_name like CONCAT('%',#{params.bisaixiangmuName},'%')
+            </if>
+            <if test=" params.bisaixiangmuShijian != '' and params.bisaixiangmuShijian != null and params.bisaixiangmuShijian != 'null' ">
+                and a.bisaixiangmu_shijian like CONCAT('%',#{params.bisaixiangmuShijian},'%')
+            </if>
+            <if test=" params.bisaixiangmuFuzhenr != '' and params.bisaixiangmuFuzhenr != null and params.bisaixiangmuFuzhenr != 'null' ">
+                and a.bisaixiangmu_fuzhenr like CONCAT('%',#{params.bisaixiangmuFuzhenr},'%')
+            </if>
+            <if test=" params.bisaixiangmuPhone != '' and params.bisaixiangmuPhone != null and params.bisaixiangmuPhone != 'null' ">
+                and a.bisaixiangmu_phone like CONCAT('%',#{params.bisaixiangmuPhone},'%')
+            </if>
+            <if test="params.bisaixiangmuTypes != null and params.bisaixiangmuTypes != ''">
+                and a.bisaixiangmu_types = #{params.bisaixiangmuTypes}
+            </if>
+            <if test=" params.jieshuTimeStart != '' and params.jieshuTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jieshu_time) >= UNIX_TIMESTAMP(#{params.jieshuTimeStart}) ]]>
+            </if>
+            <if test=" params.jieshuTimeEnd != '' and params.jieshuTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jieshu_time) <= UNIX_TIMESTAMP(#{params.jieshuTimeEnd}) ]]>
+            </if>
+            <if test="params.jieshuTime != null and params.jieshuTime != ''">
+                and a.jieshu_time = #{params.jieshuTime}
+            </if>
+            <if test=" params.bisaixiangmuContent != '' and params.bisaixiangmuContent != null and params.bisaixiangmuContent != 'null' ">
+                and a.bisaixiangmu_content like CONCAT('%',#{params.bisaixiangmuContent},'%')
+            </if>
+            <if test="params.bisaixiangmuDeleteStart != null and params.bisaixiangmuDeleteStart != ''">
+                <![CDATA[  and a.bisaixiangmu_delete >= #{params.bisaixiangmuDeleteStart}   ]]>
+            </if>
+            <if test="params.bisaixiangmuDeleteEnd != null and params.bisaixiangmuDeleteEnd != ''">
+                <![CDATA[  and a.bisaixiangmu_delete <= #{params.bisaixiangmuDeleteEnd}   ]]>
+            </if>
+             <if test="params.bisaixiangmuDelete != null and params.bisaixiangmuDelete != ''">
+                and a.bisaixiangmu_delete = #{params.bisaixiangmuDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

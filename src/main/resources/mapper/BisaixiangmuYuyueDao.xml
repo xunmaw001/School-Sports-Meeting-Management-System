@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BisaixiangmuYuyueDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.bisaixiangmu_id as bisaixiangmuId
+        ,a.yonghu_id as yonghuId
+        ,a.bisaixiangmu_yuyue_yesno_types as bisaixiangmuYuyueYesnoTypes
+        ,a.bisaixiangmu_yuyue_yesno_text as bisaixiangmuYuyueYesnoText
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BisaixiangmuYuyueView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,bisaixiangmu.bisaixiangmu_name as bisaixiangmuName
+        ,bisaixiangmu.bisaixiangmu_photo as bisaixiangmuPhoto
+        ,bisaixiangmu.bisaixiangmu_shijian as bisaixiangmuShijian
+        ,bisaixiangmu.bisaixiangmu_fuzhenr as bisaixiangmuFuzhenr
+        ,bisaixiangmu.bisaixiangmu_phone as bisaixiangmuPhone
+        ,bisaixiangmu.bisaixiangmu_types as bisaixiangmuTypes
+        ,bisaixiangmu.jieshu_time as jieshuTime
+        ,bisaixiangmu.bisaixiangmu_content as bisaixiangmuContent
+        ,bisaixiangmu.bisaixiangmu_delete as bisaixiangmuDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.yonghu_delete as yonghuDelete
+
+        FROM bisaixiangmu_yuyue  a
+        left JOIN bisaixiangmu bisaixiangmu ON a.bisaixiangmu_id = bisaixiangmu.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.bisaixiangmuId != null and params.bisaixiangmuId != ''">
+                and (
+                    a.bisaixiangmu_id = #{params.bisaixiangmuId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.bisaixiangmuYuyueYesnoTypes != null and params.bisaixiangmuYuyueYesnoTypes != ''">
+                and a.bisaixiangmu_yuyue_yesno_types = #{params.bisaixiangmuYuyueYesnoTypes}
+            </if>
+            <if test=" params.bisaixiangmuYuyueYesnoText != '' and params.bisaixiangmuYuyueYesnoText != null and params.bisaixiangmuYuyueYesnoText != 'null' ">
+                and a.bisaixiangmu_yuyue_yesno_text like CONCAT('%',#{params.bisaixiangmuYuyueYesnoText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断项目信息的id不为空 -->
+            <if test=" params.bisaixiangmuIdNotNull != '' and params.bisaixiangmuIdNotNull != null and params.bisaixiangmuIdNotNull != 'null' ">
+                and a.bisaixiangmu_id IS NOT NULL
+            </if>
+            <if test=" params.bisaixiangmuName != '' and params.bisaixiangmuName != null and params.bisaixiangmuName != 'null' ">
+                and bisaixiangmu.bisaixiangmu_name like CONCAT('%',#{params.bisaixiangmuName},'%')
+            </if>
+            <if test=" params.bisaixiangmuShijian != '' and params.bisaixiangmuShijian != null and params.bisaixiangmuShijian != 'null' ">
+                and bisaixiangmu.bisaixiangmu_shijian like CONCAT('%',#{params.bisaixiangmuShijian},'%')
+            </if>
+            <if test=" params.bisaixiangmuFuzhenr != '' and params.bisaixiangmuFuzhenr != null and params.bisaixiangmuFuzhenr != 'null' ">
+                and bisaixiangmu.bisaixiangmu_fuzhenr like CONCAT('%',#{params.bisaixiangmuFuzhenr},'%')
+            </if>
+            <if test=" params.bisaixiangmuPhone != '' and params.bisaixiangmuPhone != null and params.bisaixiangmuPhone != 'null' ">
+                and bisaixiangmu.bisaixiangmu_phone like CONCAT('%',#{params.bisaixiangmuPhone},'%')
+            </if>
+            <if test="params.bisaixiangmuTypes != null  and params.bisaixiangmuTypes != ''">
+                and bisaixiangmu.bisaixiangmu_types = #{params.bisaixiangmuTypes}
+            </if>
+
+            <if test=" params.jieshuTimeStart != '' and params.jieshuTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bisaixiangmu.jieshu_time) >= UNIX_TIMESTAMP(#{params.jieshuTimeStart}) ]]>
+            </if>
+            <if test=" params.jieshuTimeEnd != '' and params.jieshuTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bisaixiangmu.jieshu_time) <= UNIX_TIMESTAMP(#{params.jieshuTimeEnd}) ]]>
+            </if>
+            <if test="params.jieshuTime != null and params.jieshuTime != ''">
+                and a.jieshu_time = #{params.jieshuTime}
+            </if>
+            <if test=" params.bisaixiangmuContent != '' and params.bisaixiangmuContent != null and params.bisaixiangmuContent != 'null' ">
+                and bisaixiangmu.bisaixiangmu_content like CONCAT('%',#{params.bisaixiangmuContent},'%')
+            </if>
+            <if test="params.bisaixiangmuDeleteStart != null  and params.bisaixiangmuDeleteStart != '' ">
+                <![CDATA[  and bisaixiangmu.bisaixiangmu_delete >= #{params.bisaixiangmuDeleteStart}   ]]>
+            </if>
+            <if test="params.bisaixiangmuDeleteEnd != null  and params.bisaixiangmuDeleteEnd != '' ">
+                <![CDATA[  and bisaixiangmu.bisaixiangmu_delete <= #{params.bisaixiangmuDeleteEnd}   ]]>
+            </if>
+            <if test="params.bisaixiangmuDelete != null  and params.bisaixiangmuDelete != '' ">
+                and bisaixiangmu.bisaixiangmu_delete = #{params.bisaixiangmuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bisaixiangmu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bisaixiangmu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZixunCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zixun_id as zixunId
+        ,a.yonghu_id as yonghuId
+        ,a.zixun_collection_types as zixunCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZixunCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.yonghu_delete as yonghuDelete
+        ,zixun.zixun_name as zixunName
+        ,zixun.zixun_photo as zixunPhoto
+        ,zixun.zixun_video as zixunVideo
+        ,zixun.zixun_types as zixunTypes
+        ,zixun.zixun_clicknum as zixunClicknum
+        ,zixun.zixun_content as zixunContent
+        ,zixun.zixun_delete as zixunDelete
+
+        FROM zixun_collection  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        left JOIN zixun zixun ON a.zixun_id = zixun.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.zixunId != null and params.zixunId != ''">
+                and (
+                    a.zixun_id = #{params.zixunId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.zixunCollectionTypes != null and params.zixunCollectionTypes != ''">
+                and a.zixun_collection_types = #{params.zixunCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(yonghu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断运动会资讯的id不为空 -->
+            <if test=" params.zixunIdNotNull != '' and params.zixunIdNotNull != null and params.zixunIdNotNull != 'null' ">
+                and a.zixun_id IS NOT NULL
+            </if>
+            <if test=" params.zixunName != '' and params.zixunName != null and params.zixunName != 'null' ">
+                and zixun.zixun_name like CONCAT('%',#{params.zixunName},'%')
+            </if>
+            <if test=" params.zixunVideo != '' and params.zixunVideo != null and params.zixunVideo != 'null' ">
+                and zixun.zixun_video like CONCAT('%',#{params.zixunVideo},'%')
+            </if>
+            <if test="params.zixunTypes != null  and params.zixunTypes != ''">
+                and zixun.zixun_types = #{params.zixunTypes}
+            </if>
+
+            <if test="params.zixunClicknumStart != null  and params.zixunClicknumStart != '' ">
+                <![CDATA[  and zixun.zixun_clicknum >= #{params.zixunClicknumStart}   ]]>
+            </if>
+            <if test="params.zixunClicknumEnd != null  and params.zixunClicknumEnd != '' ">
+                <![CDATA[  and zixun.zixun_clicknum <= #{params.zixunClicknumEnd}   ]]>
+            </if>
+            <if test="params.zixunClicknum != null  and params.zixunClicknum != '' ">
+                and zixun.zixun_clicknum = #{params.zixunClicknum}
+            </if>
+            <if test=" params.zixunContent != '' and params.zixunContent != null and params.zixunContent != 'null' ">
+                and zixun.zixun_content like CONCAT('%',#{params.zixunContent},'%')
+            </if>
+            <if test="params.zixunDeleteStart != null  and params.zixunDeleteStart != '' ">
+                <![CDATA[  and zixun.zixun_delete >= #{params.zixunDeleteStart}   ]]>
+            </if>
+            <if test="params.zixunDeleteEnd != null  and params.zixunDeleteEnd != '' ">
+                <![CDATA[  and zixun.zixun_delete <= #{params.zixunDeleteEnd}   ]]>
+            </if>
+            <if test="params.zixunDelete != null  and params.zixunDelete != '' ">
+                and zixun.zixun_delete = #{params.zixunDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(zixun.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(zixun.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
